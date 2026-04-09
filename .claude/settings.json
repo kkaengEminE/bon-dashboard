@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/cclss/git/projec/**)",
+      "Bash(gh api:*)",
+      "Bash(mkdir -p /Users/cclss/git/projec/bon-dashboard)",
+      "Bash(rsync -a --exclude='.git' /Users/cclss/git/projec/repo-test-1-a/ /Users/cclss/git/projec/bon-dashboard/)"
+    ]
+  }
+}

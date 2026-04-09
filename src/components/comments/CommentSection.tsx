@@ -8,8 +8,8 @@ import { getComments, type Comment } from "@/lib/storage";
 export default function CommentSection({ projectId }: { projectId: string }) {
   const [comments, setComments] = useState<Comment[]>([]);
 
-  const refresh = useCallback(() => {
-    setComments(getComments(projectId));
+  const refresh = useCallback(async () => {
+    setComments(await getComments(projectId));
   }, [projectId]);
 
   useEffect(() => {

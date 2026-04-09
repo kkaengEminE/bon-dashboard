@@ -33,16 +33,16 @@ export default function CommentItem({ comment, replies, projectId, onRefresh, de
   const isAuthor = userName === comment.userName;
   const isEdited = comment.createdAt !== comment.updatedAt;
 
-  const handleEdit = () => {
+  const handleEdit = async () => {
     if (!editContent.trim()) return;
-    updateComment(comment.id, editContent.trim());
+    await updateComment(comment.id, editContent.trim());
     setEditing(false);
     onRefresh();
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!confirm("이 의견을 삭제하시겠습니까?")) return;
-    deleteComment(comment.id);
+    await deleteComment(comment.id);
     onRefresh();
   };
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Modal from "@/components/ui/Modal";
+import { useUser } from "@/context/UserContext";
 import { addProject, type Project } from "@/lib/storage";
 
 interface AddProjectModalProps {
@@ -10,6 +11,7 @@ interface AddProjectModalProps {
 }
 
 export default function AddProjectModal({ open, onClose }: AddProjectModalProps) {
+  const { userName } = useUser();
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -19,13 +21,14 @@ export default function AddProjectModal({ open, onClose }: AddProjectModalProps)
     testUrl: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim()) return;
 
-    addProject({
+    await addProject({
       ...form,
       testUrl: form.testUrl.trim() || null,
+      createdBy: userName,
     });
 
     setForm({

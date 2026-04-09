@@ -12,8 +12,8 @@ export default function ProjectGrid({
   const [projects, setProjects] = useState<Project[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  const refresh = useCallback(() => {
-    setProjects(getProjects());
+  const refresh = useCallback(async () => {
+    setProjects(await getProjects());
     setLoaded(true);
   }, []);
 

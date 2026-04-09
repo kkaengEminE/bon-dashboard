@@ -35,17 +35,17 @@ export default function EditProjectModal({ project, open, onClose, onUpdated, on
     }
   }, [open, project]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim()) return;
-    updateProject(project.id, { ...form, testUrl: form.testUrl.trim() || null });
+    await updateProject(project.id, { ...form, testUrl: form.testUrl.trim() || null });
     onUpdated();
     onClose();
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!confirm("이 프로젝트를 삭제하시겠습니까? 모든 의견과 좋아요도 함께 삭제됩니다.")) return;
-    removeProject(project.id);
+    await removeProject(project.id);
     onDeleted();
   };
 

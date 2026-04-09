@@ -9,16 +9,19 @@ import ProjectInfo from "@/components/project/ProjectInfo";
 import LikeButton from "@/components/project/LikeButton";
 import EditProjectModal from "@/components/project/EditProjectModal";
 import CommentSection from "@/components/comments/CommentSection";
+import { useUser } from "@/context/UserContext";
 import { getProject, incrementViewCount, type Project } from "@/lib/storage";
 
 export default function DashboardPage() {
+  const { userName } = useUser();
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showEdit, setShowEdit] = useState(false);
+  const isOwner = selectedProject?.createdBy === userName;
 
-  const handleSelectProject = useCallback((id: string) => {
-    incrementViewCount(id);
-    const project = getProject(id);
+  const handleSelectProject = useCallback(async (id: string) => {
+    await incrementViewCount(id);
+    const project = await getProject(id);
     if (project) setSelectedProject(project);
   }, []);
 
@@ -27,9 +30,9 @@ export default function DashboardPage() {
     window.dispatchEvent(new Event("project-updated"));
   };
 
-  const refreshProject = () => {
+  const refreshProject = async () => {
     if (selectedProject) {
-      const updated = getProject(selectedProject.id);
+      const updated = await getProject(selectedProject.id);
       if (updated) setSelectedProject(updated);
     }
   };
@@ -58,12 +61,14 @@ export default function DashboardPage() {
                     새 탭
                   </a>
                 )}
-                <button onClick={() => setShowEdit(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  수정
-                </button>
+                {isOwner && (
+                  <button onClick={() => setShowEdit(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    수정
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -85,16 +90,18 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <EditProjectModal
-          project={selectedProject}
-          open={showEdit}
-          onClose={() => setShowEdit(false)}
-          onUpdated={() => {
-            refreshProject();
-            window.dispatchEvent(new Event("project-updated"));
-          }}
-          onDeleted={handleBack}
-        />
+        {isOwner && (
+          <EditProjectModal
+            project={selectedProject}
+            open={showEdit}
+            onClose={() => setShowEdit(false)}
+            onUpdated={() => {
+              refreshProject();
+              window.dispatchEvent(new Event("project-updated"));
+            }}
+            onDeleted={handleBack}
+          />
+        )}
       </div>
     );
   }

@@ -17,12 +17,14 @@ export default function LikeButton({
 
   useEffect(() => {
     if (!userName) return;
-    setLiked(checkLiked(projectId, userName));
+    (async () => {
+      setLiked(await checkLiked(projectId, userName));
+    })();
   }, [projectId, userName]);
 
-  const handleToggle = () => {
+  const handleToggle = async () => {
     if (!userName) return;
-    const result = toggleLike(projectId, userName);
+    const result = await toggleLike(projectId, userName);
     setLiked(result.liked);
     setCount((c) => (result.liked ? c + 1 : Math.max(c - 1, 0)));
   };

@@ -16,10 +16,10 @@ export default function CommentForm({ projectId, parentId, onSubmitted, onCancel
   const { userName } = useUser();
   const [content, setContent] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim() || !userName) return;
-    addComment({ projectId, userName, content: content.trim(), parentId: parentId || null });
+    await addComment({ projectId, userName, content: content.trim(), parentId: parentId || null });
     setContent("");
     onSubmitted();
   };

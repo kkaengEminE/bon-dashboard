@@ -1,4 +1,4 @@
-import { v4 as uuid } from "uuid";
+import { getSupabase } from "./supabase";
 
 // Types
 export interface Project {
@@ -11,6 +11,7 @@ export interface Project {
   testUrl: string | null;
   viewCount: number;
   likeCount: number;
+  createdBy: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -25,202 +26,238 @@ export interface Comment {
   updatedAt: string;
 }
 
-interface Like {
-  id: string;
-  projectId: string;
-  userName: string;
+// Row mappers (snake_case DB -> camelCase TS)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function toProject(row: any): Project {
+  return {
+    id: row.id,
+    name: row.name,
+    description: row.description,
+    techSpec: row.tech_spec,
+    usageGuide: row.usage_guide,
+    status: row.status,
+    testUrl: row.test_url,
+    viewCount: row.view_count,
+    likeCount: row.like_count,
+    createdBy: row.created_by,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
 }
 
-// Storage keys
-const PROJECTS_KEY = "bon-projects";
-const COMMENTS_KEY = "bon-comments";
-const LIKES_KEY = "bon-likes";
-
-// Helpers
-function load<T>(key: string): T[] {
-  if (typeof window === "undefined") return [];
-  const data = localStorage.getItem(key);
-  return data ? JSON.parse(data) : [];
-}
-
-function save<T>(key: string, data: T[]) {
-  localStorage.setItem(key, JSON.stringify(data));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function toComment(row: any): Comment {
+  return {
+    id: row.id,
+    projectId: row.project_id,
+    parentId: row.parent_id,
+    userName: row.user_name,
+    content: row.content,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
 }
 
 // Projects
-export function getProjects(): Project[] {
-  return load<Project>(PROJECTS_KEY).sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+export async function getProjects(): Promise<Project[]> {
+  const { data, error } = await getSupabase()
+    .from("projects")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("getProjects error:", error);
+    return [];
+  }
+  return (data || []).map(toProject);
 }
 
-export function getProject(id: string): Project | undefined {
-  return load<Project>(PROJECTS_KEY).find((p) => p.id === id);
+export async function getProject(id: string): Promise<Project | undefined> {
+  const { data, error } = await getSupabase()
+    .from("projects")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error || !data) return undefined;
+  return toProject(data);
 }
 
-export function addProject(data: {
+export async function addProject(data: {
   name: string;
   description?: string;
   techSpec?: string;
   usageGuide?: string;
   status?: Project["status"];
   testUrl?: string | null;
-}): Project {
-  const projects = load<Project>(PROJECTS_KEY);
-  const now = new Date().toISOString();
-  const project: Project = {
-    id: uuid(),
-    name: data.name,
-    description: data.description || "",
-    techSpec: data.techSpec || "",
-    usageGuide: data.usageGuide || "",
-    status: data.status || "developing",
-    testUrl: data.testUrl || null,
-    viewCount: 0,
-    likeCount: 0,
-    createdAt: now,
-    updatedAt: now,
-  };
-  projects.push(project);
-  save(PROJECTS_KEY, projects);
-  return project;
+  createdBy?: string;
+}): Promise<Project> {
+  const { data: row, error } = await getSupabase()
+    .from("projects")
+    .insert({
+      name: data.name,
+      description: data.description || "",
+      tech_spec: data.techSpec || "",
+      usage_guide: data.usageGuide || "",
+      status: data.status || "developing",
+      test_url: data.testUrl || null,
+      created_by: data.createdBy || "",
+    })
+    .select()
+    .single();
+
+  if (error) throw new Error(`addProject error: ${error.message}`);
+  return toProject(row);
 }
 
-export function updateProject(
+export async function updateProject(
   id: string,
   data: Partial<Omit<Project, "id" | "createdAt">>
-): Project | undefined {
-  const projects = load<Project>(PROJECTS_KEY);
-  const idx = projects.findIndex((p) => p.id === id);
-  if (idx === -1) return undefined;
-  projects[idx] = {
-    ...projects[idx],
-    ...data,
-    updatedAt: new Date().toISOString(),
-  };
-  save(PROJECTS_KEY, projects);
-  return projects[idx];
+): Promise<Project | undefined> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const update: any = { updated_at: new Date().toISOString() };
+  if (data.name !== undefined) update.name = data.name;
+  if (data.description !== undefined) update.description = data.description;
+  if (data.techSpec !== undefined) update.tech_spec = data.techSpec;
+  if (data.usageGuide !== undefined) update.usage_guide = data.usageGuide;
+  if (data.status !== undefined) update.status = data.status;
+  if (data.testUrl !== undefined) update.test_url = data.testUrl;
+  if (data.createdBy !== undefined) update.created_by = data.createdBy;
+
+  const { data: row, error } = await getSupabase()
+    .from("projects")
+    .update(update)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error || !row) return undefined;
+  return toProject(row);
 }
 
-export function deleteProject(id: string) {
-  const projects = load<Project>(PROJECTS_KEY).filter((p) => p.id !== id);
-  save(PROJECTS_KEY, projects);
-  // Also delete related comments and likes
-  const comments = load<Comment>(COMMENTS_KEY).filter(
-    (c) => c.projectId !== id
-  );
-  save(COMMENTS_KEY, comments);
-  const likes = load<Like>(LIKES_KEY).filter((l) => l.projectId !== id);
-  save(LIKES_KEY, likes);
+export async function deleteProject(id: string): Promise<void> {
+  const { error } = await getSupabase().from("projects").delete().eq("id", id);
+  if (error) console.error("deleteProject error:", error);
 }
 
-export function incrementViewCount(id: string) {
-  const projects = load<Project>(PROJECTS_KEY);
-  const idx = projects.findIndex((p) => p.id === id);
-  if (idx === -1) return;
-  projects[idx].viewCount += 1;
-  save(PROJECTS_KEY, projects);
+export async function incrementViewCount(id: string): Promise<void> {
+  const { error } = await getSupabase().rpc("increment_view_count", { p_id: id });
+  if (error) console.error("incrementViewCount error:", error);
 }
 
 // Likes
-export function isLiked(projectId: string, userName: string): boolean {
-  return load<Like>(LIKES_KEY).some(
-    (l) => l.projectId === projectId && l.userName === userName
-  );
-}
-
-export function toggleLike(
+export async function isLiked(
   projectId: string,
   userName: string
-): { liked: boolean } {
-  const likes = load<Like>(LIKES_KEY);
-  const idx = likes.findIndex(
-    (l) => l.projectId === projectId && l.userName === userName
-  );
+): Promise<boolean> {
+  const { data } = await getSupabase()
+    .from("likes")
+    .select("id")
+    .eq("project_id", projectId)
+    .eq("user_name", userName)
+    .maybeSingle();
 
-  const projects = load<Project>(PROJECTS_KEY);
-  const pIdx = projects.findIndex((p) => p.id === projectId);
+  return !!data;
+}
 
-  if (idx >= 0) {
-    // Unlike
-    likes.splice(idx, 1);
-    if (pIdx >= 0) projects[pIdx].likeCount = Math.max(projects[pIdx].likeCount - 1, 0);
-    save(LIKES_KEY, likes);
-    save(PROJECTS_KEY, projects);
-    return { liked: false };
+export async function toggleLike(
+  projectId: string,
+  userName: string
+): Promise<{ liked: boolean }> {
+  const liked = await isLiked(projectId, userName);
+
+  if (liked) {
+    await getSupabase()
+      .from("likes")
+      .delete()
+      .eq("project_id", projectId)
+      .eq("user_name", userName);
   } else {
-    // Like
-    likes.push({ id: uuid(), projectId, userName });
-    if (pIdx >= 0) projects[pIdx].likeCount += 1;
-    save(LIKES_KEY, likes);
-    save(PROJECTS_KEY, projects);
-    return { liked: true };
+    await getSupabase()
+      .from("likes")
+      .insert({ project_id: projectId, user_name: userName });
   }
+
+  // Update like_count from actual count
+  const { count } = await getSupabase()
+    .from("likes")
+    .select("*", { count: "exact", head: true })
+    .eq("project_id", projectId);
+
+  await getSupabase()
+    .from("projects")
+    .update({ like_count: count || 0 })
+    .eq("id", projectId);
+
+  return { liked: !liked };
 }
 
 // Comments
-export function getComments(projectId: string): Comment[] {
-  return load<Comment>(COMMENTS_KEY)
-    .filter((c) => c.projectId === projectId)
-    .sort(
-      (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    );
+export async function getComments(projectId: string): Promise<Comment[]> {
+  const { data, error } = await getSupabase()
+    .from("comments")
+    .select("*")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("getComments error:", error);
+    return [];
+  }
+  return (data || []).map(toComment);
 }
 
-export function addComment(data: {
+export async function addComment(data: {
   projectId: string;
   parentId?: string | null;
   userName: string;
   content: string;
-}): Comment {
-  const comments = load<Comment>(COMMENTS_KEY);
-  const now = new Date().toISOString();
-
+}): Promise<Comment> {
   // Flatten depth > 1
   let parentId = data.parentId || null;
   if (parentId) {
-    const parent = comments.find((c) => c.id === parentId);
-    if (parent && parent.parentId) {
-      parentId = parent.parentId;
+    const { data: parent } = await getSupabase()
+      .from("comments")
+      .select("parent_id")
+      .eq("id", parentId)
+      .single();
+    if (parent?.parent_id) {
+      parentId = parent.parent_id;
     }
   }
 
-  const comment: Comment = {
-    id: uuid(),
-    projectId: data.projectId,
-    parentId,
-    userName: data.userName,
-    content: data.content,
-    createdAt: now,
-    updatedAt: now,
-  };
-  comments.push(comment);
-  save(COMMENTS_KEY, comments);
-  return comment;
+  const { data: row, error } = await getSupabase()
+    .from("comments")
+    .insert({
+      project_id: data.projectId,
+      parent_id: parentId,
+      user_name: data.userName,
+      content: data.content,
+    })
+    .select()
+    .single();
+
+  if (error) throw new Error(`addComment error: ${error.message}`);
+  return toComment(row);
 }
 
-export function updateComment(id: string, content: string): Comment | undefined {
-  const comments = load<Comment>(COMMENTS_KEY);
-  const idx = comments.findIndex((c) => c.id === id);
-  if (idx === -1) return undefined;
-  comments[idx].content = content;
-  comments[idx].updatedAt = new Date().toISOString();
-  save(COMMENTS_KEY, comments);
-  return comments[idx];
+export async function updateComment(
+  id: string,
+  content: string
+): Promise<Comment | undefined> {
+  const { data: row, error } = await getSupabase()
+    .from("comments")
+    .update({ content, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error || !row) return undefined;
+  return toComment(row);
 }
 
-export function deleteComment(id: string) {
-  const comments = load<Comment>(COMMENTS_KEY);
-  const comment = comments.find((c) => c.id === id);
-  let filtered = comments;
-
-  if (comment && !comment.parentId) {
-    // Top-level: also delete replies
-    filtered = comments.filter((c) => c.id !== id && c.parentId !== id);
-  } else {
-    filtered = comments.filter((c) => c.id !== id);
-  }
-
-  save(COMMENTS_KEY, filtered);
+export async function deleteComment(id: string): Promise<void> {
+  // CASCADE on parent_id FK handles reply deletion for top-level comments
+  const { error } = await getSupabase().from("comments").delete().eq("id", id);
+  if (error) console.error("deleteComment error:", error);
 }

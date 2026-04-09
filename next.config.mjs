@@ -10,8 +10,8 @@ dotenv.config({ path: path.resolve(__dirname, ".env/.env.prod") });
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "export",
-  basePath: "/repo-test-1-a/bon-dashboard",
-  assetPrefix: "/repo-test-1-a/bon-dashboard",
+  basePath: "/bon-dashboard",
+  assetPrefix: "/bon-dashboard",
   images: { unoptimized: true },
   trailingSlash: true,
 };

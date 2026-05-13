@@ -4,7 +4,13 @@
       "Read(//Users/cclss/git/projec/**)",
       "Bash(gh api:*)",
       "Bash(mkdir -p /Users/cclss/git/projec/bon-dashboard)",
-      "Bash(rsync -a --exclude='.git' /Users/cclss/git/projec/repo-test-1-a/ /Users/cclss/git/projec/bon-dashboard/)"
+      "Bash(rsync -a --exclude='.git' /Users/cclss/git/projec/repo-test-1-a/ /Users/cclss/git/projec/bon-dashboard/)",
+      "Bash(npm run:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git push:*)",
+      "Bash(ls -la /Users/cclss/git/projec/bon-dashboard/.env*)",
+      "Bash(npm install:*)"
     ]
   }
 }

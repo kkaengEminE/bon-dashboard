@@ -38,8 +38,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
     document.cookie = `bon-user-name=${encodeURIComponent(name)}; path=/; max-age=31536000`;
   };
 
-  if (!loaded) return <>{children}</>;
-
   return (
     <UserContext.Provider
       value={{ userName, setUserName, showNameModal, setShowNameModal }}

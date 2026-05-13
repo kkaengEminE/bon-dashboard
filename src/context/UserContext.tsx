@@ -20,8 +20,6 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: ReactNode }) {
   const [userName, setUserNameState] = useState("");
   const [showNameModal, setShowNameModal] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-
   useEffect(() => {
     const stored = localStorage.getItem("bon-user-name");
     if (stored) {
@@ -29,7 +27,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
     } else {
       setShowNameModal(true);
     }
-    setLoaded(true);
   }, []);
 
   const setUserName = (name: string) => {

@@ -7,6 +7,7 @@ interface Project {
   id: string;
   name: string;
   title?: string | null;
+  repositoryName?: string | null;
   description: string | null;
   status: string;
   testUrl: string | null;

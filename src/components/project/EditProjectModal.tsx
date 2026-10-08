@@ -73,6 +73,7 @@ export default function EditProjectModal({ project, open, onClose, onUpdated, on
             <label className="block text-sm font-medium text-gray-700 mb-1">상태</label>
             <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as Project["status"] })} className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
               <option value="developing">개발중</option>
+              <option value="deploying">배포 중</option>
               <option value="testable">테스트가능</option>
               <option value="completed">완료</option>
             </select>

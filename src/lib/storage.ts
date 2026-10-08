@@ -7,7 +7,7 @@ export interface Project {
   description: string;
   techSpec: string;
   usageGuide: string;
-  status: "developing" | "testable" | "completed";
+  status: "developing" | "deploying" | "testable" | "completed";
   testUrl: string | null;
   viewCount: number;
   likeCount: number;

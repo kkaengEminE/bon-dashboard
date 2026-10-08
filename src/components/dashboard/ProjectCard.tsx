@@ -1,6 +1,7 @@
 "use client";
 
 import StatusBadge from "@/components/ui/StatusBadge";
+import { REPO_METADATA } from "@/lib/repoMetadata";
 
 interface Project {
   id: string;
@@ -22,6 +23,10 @@ export default function ProjectCard({
   project: Project;
   onSelect: (id: string) => void;
 }) {
+  const metadata = REPO_METADATA[project.repositoryName || project.name];
+  const displayTitle = metadata?.title || project.title || project.name;
+  const displayDescription = metadata?.description || project.description;
+
   return (
     <button
       onClick={() => onSelect(project.id)}
@@ -30,14 +35,14 @@ export default function ProjectCard({
       <div className="p-5">
         <div className="flex items-start justify-between mb-3">
           <h3 className="font-bold text-gray-900 group-hover:text-indigo-600 transition truncate pr-2">
-            {project.title || project.name}
+            {displayTitle}
           </h3>
           <StatusBadge status={project.status} />
         </div>
 
-        {project.description && (
+        {displayDescription && (
           <p className="text-sm text-gray-500 line-clamp-2 mb-4">
-            {project.description}
+            {displayDescription}
           </p>
         )}
 

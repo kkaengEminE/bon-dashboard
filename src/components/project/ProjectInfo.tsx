@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import StatusBadge from "@/components/ui/StatusBadge";
+import { REPO_METADATA } from "@/lib/repoMetadata";
 
 interface Project {
   id: string;
@@ -21,6 +22,9 @@ interface Project {
 
 export default function ProjectInfo({ project }: { project: Project }) {
   const [copied, setCopied] = useState(false);
+  const metadata = REPO_METADATA[project.repositoryName || project.name];
+  const displayTitle = metadata?.title || project.title || project.name;
+  const displayDescription = metadata?.description || project.description;
 
   const copyUrl = () => {
     if (project.testUrl) {
@@ -34,11 +38,11 @@ export default function ProjectInfo({ project }: { project: Project }) {
     <div className="space-y-4">
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <h1 className="text-xl font-bold text-gray-900">{project.title || project.name}</h1>
+          <h1 className="text-xl font-bold text-gray-900">{displayTitle}</h1>
           <StatusBadge status={project.status} />
         </div>
-        {project.description && (
-          <p className="text-sm text-gray-600 leading-relaxed">{project.description}</p>
+        {displayDescription && (
+          <p className="text-sm text-gray-600 leading-relaxed">{displayDescription}</p>
         )}
       </div>
 

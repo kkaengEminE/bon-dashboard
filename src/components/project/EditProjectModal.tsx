@@ -15,6 +15,9 @@ interface EditProjectModalProps {
 export default function EditProjectModal({ project, open, onClose, onUpdated, onDeleted }: EditProjectModalProps) {
   const [form, setForm] = useState({
     name: "",
+    title: "",
+    repositoryName: "",
+    repositoryUrl: "",
     description: "",
     techSpec: "",
     usageGuide: "",
@@ -26,6 +29,9 @@ export default function EditProjectModal({ project, open, onClose, onUpdated, on
     if (open) {
       setForm({
         name: project.name,
+        title: project.title || project.name,
+        repositoryName: project.repositoryName || project.name,
+        repositoryUrl: project.repositoryUrl || "",
         description: project.description || "",
         techSpec: project.techSpec || "",
         usageGuide: project.usageGuide || "",
@@ -56,6 +62,11 @@ export default function EditProjectModal({ project, open, onClose, onUpdated, on
           <label className="block text-sm font-medium text-gray-700 mb-1">프로젝트 이름 *</label>
           <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
         </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">표시 제목</label><input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="사람이 읽기 좋은 제목" /></div>
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">레포 이름</label><input type="text" value={form.repositoryName} onChange={(e) => setForm({ ...form, repositoryName: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="GitHub 저장소 이름" /></div>
+        </div>
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">레포 주소</label><input type="url" value={form.repositoryUrl} onChange={(e) => setForm({ ...form, repositoryUrl: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="https://github.com/..." /></div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">설명</label>
           <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none" rows={2} />

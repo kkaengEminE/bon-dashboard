@@ -14,6 +14,9 @@ export default function AddProjectModal({ open, onClose }: AddProjectModalProps)
   const { userName } = useUser();
   const [form, setForm] = useState({
     name: "",
+    title: "",
+    repositoryName: "",
+    repositoryUrl: "",
     description: "",
     techSpec: "",
     usageGuide: "",
@@ -33,6 +36,9 @@ export default function AddProjectModal({ open, onClose }: AddProjectModalProps)
 
     setForm({
       name: "",
+      title: "",
+      repositoryName: "",
+      repositoryUrl: "",
       description: "",
       techSpec: "",
       usageGuide: "",
@@ -61,6 +67,11 @@ export default function AddProjectModal({ open, onClose }: AddProjectModalProps)
           />
         </div>
 
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">표시 제목</label><input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="사람이 읽기 좋은 제목" /></div>
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">레포 이름</label><input type="text" value={form.repositoryName} onChange={(e) => setForm({ ...form, repositoryName: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="GitHub 저장소 이름" /></div>
+        </div>
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">레포 주소</label><input type="url" value={form.repositoryUrl} onChange={(e) => setForm({ ...form, repositoryUrl: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="https://github.com/..." /></div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">설명</label>
           <textarea

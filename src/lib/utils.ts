@@ -18,7 +18,7 @@ export function timeAgo(dateStr: string): string {
 export const STATUS_LABELS: Record<string, string> = {
   developing: "개발중",
   deploying: "배포 중",
-  testable: "테스트가능",
+  testable: "배포 중",
   completed: "완료",
 };
 

@@ -54,7 +54,7 @@ export default function CommentItem({ comment, replies, projectId, onRefresh, de
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-sm font-semibold text-gray-800">{comment.userName}</span>
-              <span className="text-xs text-gray-400">{timeAgo(comment.createdAt)}</span>
+              <span className="text-xs text-gray-400">{timeAgo(comment.createdAt)} · {new Date(comment.createdAt).toLocaleString("ko-KR")}</span>
               {isEdited && <span className="text-xs text-gray-400">(수정됨)</span>}
             </div>
             {editing ? (

@@ -46,6 +46,13 @@ export default function ProjectInfo({ project }: { project: Project }) {
         )}
       </div>
 
+      {metadata && (
+        <div className="flex flex-wrap gap-3 text-xs text-gray-500">
+          {metadata.createdAt && <span>레포 생성일 {new Date(metadata.createdAt).toLocaleDateString("ko-KR")}</span>}
+          {metadata.updatedAt && <span>마지막 수정 {new Date(metadata.updatedAt).toLocaleDateString("ko-KR")}</span>}
+        </div>
+      )}
+
       {project.repositoryName && (
         <div className="rounded-lg border border-gray-100 p-3 space-y-2">
           <div><span className="text-xs font-medium text-gray-500">레포 이름</span><p className="text-sm text-gray-700">{project.repositoryName}</p></div>

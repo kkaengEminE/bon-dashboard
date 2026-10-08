@@ -29,7 +29,7 @@ export default function ProjectCard({
       <div className="p-5">
         <div className="flex items-start justify-between mb-3">
           <h3 className="font-bold text-gray-900 group-hover:text-indigo-600 transition truncate pr-2">
-            {project.name}
+            {project.title || project.name}
           </h3>
           <StatusBadge status={project.status} />
         </div>

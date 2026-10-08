@@ -6,6 +6,9 @@ import StatusBadge from "@/components/ui/StatusBadge";
 interface Project {
   id: string;
   name: string;
+  title?: string | null;
+  repositoryName?: string | null;
+  repositoryUrl?: string | null;
   description: string | null;
   techSpec: string | null;
   usageGuide: string | null;
@@ -31,13 +34,20 @@ export default function ProjectInfo({ project }: { project: Project }) {
     <div className="space-y-4">
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <h1 className="text-xl font-bold text-gray-900">{project.name}</h1>
+          <h1 className="text-xl font-bold text-gray-900">{project.title || project.name}</h1>
           <StatusBadge status={project.status} />
         </div>
         {project.description && (
           <p className="text-sm text-gray-600 leading-relaxed">{project.description}</p>
         )}
       </div>
+
+      {project.repositoryName && (
+        <div className="rounded-lg border border-gray-100 p-3 space-y-2">
+          <div><span className="text-xs font-medium text-gray-500">레포 이름</span><p className="text-sm text-gray-700">{project.repositoryName}</p></div>
+          {project.repositoryUrl && <div><span className="text-xs font-medium text-gray-500">레포 주소</span><a href={project.repositoryUrl} target="_blank" rel="noopener noreferrer" className="block text-sm text-indigo-600 hover:underline break-all">{project.repositoryUrl}</a></div>}
+        </div>
+      )}
 
       {project.testUrl && (
         <div className="bg-gray-50 rounded-lg p-3">

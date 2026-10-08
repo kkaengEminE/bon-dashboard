@@ -4,6 +4,9 @@ import { getSupabase } from "./supabase";
 export interface Project {
   id: string;
   name: string;
+  title?: string | null;
+  repositoryName?: string | null;
+  repositoryUrl?: string | null;
   description: string;
   techSpec: string;
   usageGuide: string;
@@ -32,6 +35,9 @@ function toProject(row: any): Project {
   return {
     id: row.id,
     name: row.name,
+    title: row.title ?? null,
+    repositoryName: row.repository_name ?? row.name,
+    repositoryUrl: row.repository_url ?? null,
     description: row.description,
     techSpec: row.tech_spec,
     usageGuide: row.usage_guide,
@@ -85,6 +91,9 @@ export async function getProject(id: string): Promise<Project | undefined> {
 
 export async function addProject(data: {
   name: string;
+  title?: string;
+  repositoryName?: string;
+  repositoryUrl?: string;
   description?: string;
   techSpec?: string;
   usageGuide?: string;
@@ -95,7 +104,10 @@ export async function addProject(data: {
   const { data: row, error } = await getSupabase()
     .from("projects")
     .insert({
-      name: data.name,
+      name: data.repositoryName || data.name,
+      title: data.title || data.name,
+      repository_name: data.repositoryName || data.name,
+      repository_url: data.repositoryUrl || null,
       description: data.description || "",
       tech_spec: data.techSpec || "",
       usage_guide: data.usageGuide || "",
@@ -117,6 +129,9 @@ export async function updateProject(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const update: any = { updated_at: new Date().toISOString() };
   if (data.name !== undefined) update.name = data.name;
+  if (data.title !== undefined) update.title = data.title;
+  if (data.repositoryName !== undefined) update.repository_name = data.repositoryName;
+  if (data.repositoryUrl !== undefined) update.repository_url = data.repositoryUrl;
   if (data.description !== undefined) update.description = data.description;
   if (data.techSpec !== undefined) update.tech_spec = data.techSpec;
   if (data.usageGuide !== undefined) update.usage_guide = data.usageGuide;

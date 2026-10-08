@@ -5,6 +5,7 @@ import StatusBadge from "@/components/ui/StatusBadge";
 interface Project {
   id: string;
   name: string;
+  title?: string | null;
   description: string | null;
   status: string;
   testUrl: string | null;

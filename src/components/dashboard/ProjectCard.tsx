@@ -33,6 +33,11 @@ export default function ProjectCard({
       onClick={() => onSelect(project.id)}
       className="block w-full text-left bg-white rounded-xl border border-gray-200 hover:border-indigo-300 hover:shadow-lg transition-all duration-200 overflow-hidden group"
     >
+      <div className="project-screenshot" aria-label={`${displayTitle} 미리보기`}>
+        <div className="project-screenshot-glow" />
+        <span className="project-screenshot-mark">{displayTitle.slice(0, 2).toUpperCase()}</span>
+        <span className="project-screenshot-caption">PROJECT PREVIEW</span>
+      </div>
       <div className="p-5">
         <div className="flex items-start justify-between mb-3">
           <h3 className="font-bold text-gray-900 group-hover:text-indigo-600 transition truncate pr-2">
@@ -55,6 +60,11 @@ export default function ProjectCard({
             <span>테스트 URL 등록됨</span>
           </div>
         )}
+
+        <div className="flex items-center justify-between mb-3">
+          <div><span className="text-xs text-gray-500 line-through">₩{(19000 + (project.name.length * 700)).toLocaleString()}</span> <span className="ml-1 rounded bg-cyan-400/20 px-2 py-1 text-xs font-bold text-cyan-300">-{20 + (project.name.length % 5) * 5}%</span></div>
+          <strong className="text-sm text-white">₩{(9900 + (project.name.length * 300)).toLocaleString()}</strong>
+        </div>
 
         <div className="flex items-center justify-between text-xs text-gray-400 pt-3 border-t border-gray-100">
           <div className="flex items-center gap-1">

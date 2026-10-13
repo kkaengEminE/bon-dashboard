@@ -20,3 +20,22 @@ body {
 .project-screenshot-glow { width: 90px; height: 90px; border-radius: 50%; background: radial-gradient(circle, rgba(34,211,238,.8), rgba(37,99,235,.08) 65%, transparent 70%); filter: blur(2px); }
 .project-screenshot-mark { position:absolute; font-size: 30px; font-weight: 900; letter-spacing: .08em; color: #b8f3ff; text-shadow: 0 0 16px #22d3ee; }
 .project-screenshot-caption { position:absolute; bottom: 10px; left: 14px; font-size: 9px; letter-spacing: .2em; color: #67e8f9; opacity: .75; }
+
+/* Real site captures and lightweight construction animation. */
+.actual-preview, .construction-preview { position:relative; aspect-ratio:16/9; overflow:hidden; border-bottom:1px solid #1c5068; background:#081325; }
+.actual-preview img { display:block; width:100%; height:100%; object-fit:contain; }
+.capture-label { position:absolute; bottom:10px; left:12px; padding:4px 8px; border-radius:5px; color:#e4faff; background:rgba(4,16,32,.8); font-size:10px; }
+.preview-unavailable { display:grid; place-items:center; height:100%; color:#93b5ce; font-size:13px; }
+.construction-preview { background:radial-gradient(ellipse at 50% 65%,#10344b,#050f21 75%); }
+.construction-preview svg { position:absolute; inset:0; width:100%; height:90%; filter:drop-shadow(0 0 5px #168ba966); }
+.construction-grid { position:absolute; inset:30% -30% -60%; background-image:linear-gradient(#30c6ed22 1px,transparent 1px),linear-gradient(90deg,#30c6ed22 1px,transparent 1px); background-size:26px 26px; transform:perspective(220px) rotateX(55deg); }
+.construction-label { position:absolute; bottom:12px; left:0; width:100%; text-align:center; font-size:12px; letter-spacing:.03em; color:#b0eeff; }
+.construction-label i { display:inline-block; width:6px; height:6px; background:#45e8ff; border-radius:50%; margin-right:7px; box-shadow:0 0 9px #45e8ff; animation:build-pulse 2s infinite; }
+.crane-cargo { animation:cargo-move 5s ease-in-out infinite alternate; }
+.city-frame { animation:build-pulse 4s ease-in-out infinite; }
+.build-scan { animation:scan-move 4s linear infinite; opacity:.5; }
+.build-sparks { animation:build-pulse 1.1s infinite; }
+@keyframes cargo-move { from {transform:translate(0,-18px)} to {transform:translate(52px,35px)} }
+@keyframes scan-move { from {transform:translateY(-85px);opacity:0} 40% {opacity:.7} to {transform:translateY(100px);opacity:0} }
+@keyframes build-pulse { 50% {opacity:.35} }
+@media (prefers-reduced-motion:reduce) { .construction-preview * { animation:none!important; } }

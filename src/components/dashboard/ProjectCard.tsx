@@ -1,5 +1,6 @@
 "use client";
 
+import ProjectPreview from "./ProjectPreview";
 import StatusBadge from "@/components/ui/StatusBadge";
 import { REPO_METADATA } from "@/lib/repoMetadata";
 
@@ -33,11 +34,7 @@ export default function ProjectCard({
       onClick={() => onSelect(project.id)}
       className="block w-full text-left bg-white rounded-xl border border-gray-200 hover:border-indigo-300 hover:shadow-lg transition-all duration-200 overflow-hidden group"
     >
-      <div className="project-screenshot" aria-label={`${displayTitle} 미리보기`}>
-        <div className="project-screenshot-glow" />
-        <span className="project-screenshot-mark">{displayTitle.slice(0, 2).toUpperCase()}</span>
-        <span className="project-screenshot-caption">PROJECT PREVIEW</span>
-      </div>
+      <ProjectPreview repository={project.repositoryName || project.name} title={displayTitle} status={project.status} />
       <div className="p-5">
         <div className="flex items-start justify-between mb-3">
           <h3 className="font-bold text-gray-900 group-hover:text-indigo-600 transition truncate pr-2">

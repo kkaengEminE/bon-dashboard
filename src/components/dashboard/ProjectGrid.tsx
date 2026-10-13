@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import ProjectCard from "./ProjectCard";
 import { getProjects, type Project } from "@/lib/storage";
+import { REPO_METADATA } from "@/lib/repoMetadata";
 
 export default function ProjectGrid({
   onSelectProject,
@@ -11,6 +12,7 @@ export default function ProjectGrid({
 }) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [sort, setSort] = useState<"name" | "updated">("name");
   const [filter, setFilter] = useState<"all" | "developing" | "testable" | "completed">("all");
 
   const refresh = useCallback(async () => {
@@ -46,7 +48,16 @@ export default function ProjectGrid({
 
   const visibleProjects = projects
     .filter((project) => filter === "all" || project.status === filter || (filter === "testable" && project.status === "deploying"))
-    .sort((a, b) => a.name.localeCompare(b.name, "ko"));
+    .sort((a, b) => {
+      const aMetadata = REPO_METADATA[a.repositoryName || a.name];
+      const bMetadata = REPO_METADATA[b.repositoryName || b.name];
+      if (sort === "updated") {
+        const aTime = Date.parse(aMetadata?.updatedAt || "") || 0;
+        const bTime = Date.parse(bMetadata?.updatedAt || "") || 0;
+        if (aTime !== bTime) return bTime - aTime;
+      }
+      return (aMetadata?.title || a.title || a.name).localeCompare(bMetadata?.title || b.title || b.name, "ko");
+    });
 
   return (
     <div>
@@ -69,7 +80,18 @@ export default function ProjectGrid({
             </button>
           ))}
         </div>
-        <span className="text-sm text-gray-400">이름순 · {visibleProjects.length}개</span>
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <select
+            aria-label="프로젝트 정렬"
+            value={sort}
+            onChange={(event) => setSort(event.target.value as typeof sort)}
+            className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="name">이름순</option>
+            <option value="updated">마지막 업데이트순</option>
+          </select>
+          <span>· {visibleProjects.length}개</span>
+        </div>
       </div>
       {visibleProjects.length === 0 ? (
         <div className="rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center text-gray-400">

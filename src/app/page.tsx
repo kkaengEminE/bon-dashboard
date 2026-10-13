@@ -120,7 +120,7 @@ export default function DashboardPage() {
               <span className="text-xs text-gray-400 hidden sm:inline">프로젝트 검토 플랫폼</span>
             </div>
             <div className="flex items-center gap-3">
-              <button onClick={() => setDarkMode(!darkMode)} className="rounded-lg border border-cyan-400/40 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-400/10 transition">{darkMode ? "☀ 라이트" : "◐ 다크"}</button>
+              <button onClick={() => setDarkMode(!darkMode)} className={`rounded-lg border px-3 py-2 text-xs font-semibold transition ${darkMode ? "border-cyan-400/40 text-cyan-300 hover:bg-cyan-400/10" : "border-slate-300 text-slate-700 hover:bg-slate-100"}`}>{darkMode ? "☀ 라이트" : "◐ 다크"}</button>
               <button onClick={() => setShowAddModal(true)} className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

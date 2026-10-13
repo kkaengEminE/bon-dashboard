@@ -63,6 +63,16 @@ export default function ProjectCard({
           <strong className="text-sm text-white">₩{(9900 + (project.name.length * 300)).toLocaleString()}</strong>
         </div>
 
+        <div className="text-xs text-gray-500 mb-3">
+          마지막 업데이트 · {metadata?.updatedAt ? (
+            <time dateTime={metadata.updatedAt} title="Git 기준 · 한국 시간">
+              {new Date(metadata.updatedAt).toLocaleDateString("ko-KR", {
+                timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit",
+              })}
+            </time>
+          ) : "Git 날짜 정보 없음"}
+        </div>
+
         <div className="flex items-center justify-between text-xs text-gray-400 pt-3 border-t border-gray-100">
           <div className="flex items-center gap-1">
             {project.createdBy && (

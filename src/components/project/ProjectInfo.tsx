@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import StatusBadge from "@/components/ui/StatusBadge";
+import { projectUpdatedAt } from "@/lib/projectDates";
 import { REPO_METADATA } from "@/lib/repoMetadata";
 
 interface Project {
@@ -18,6 +19,8 @@ interface Project {
   viewCount: number;
   likeCount: number;
   createdBy: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export default function ProjectInfo({ project }: { project: Project }) {
@@ -25,6 +28,10 @@ export default function ProjectInfo({ project }: { project: Project }) {
   const metadata = REPO_METADATA[project.repositoryName || project.name];
   const displayTitle = metadata?.title || project.title || project.name;
   const displayDescription = metadata?.description || project.description;
+
+  const lastUpdated = projectUpdatedAt(project);
+  const registeredAt = projectUpdatedAt({ createdAt: project.createdAt });
+  const formatDate = (value: string) => new Date(value).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
 
   const copyUrl = () => {
     if (project.testUrl) {
@@ -46,10 +53,10 @@ export default function ProjectInfo({ project }: { project: Project }) {
         )}
       </div>
 
-      {metadata && (
+      {(registeredAt || lastUpdated) && (
         <div className="flex flex-wrap gap-3 text-xs text-gray-500">
-          {metadata.createdAt && <span>레포 생성일 {new Date(metadata.createdAt).toLocaleDateString("ko-KR")}</span>}
-          {metadata.updatedAt && <span>마지막 수정 {new Date(metadata.updatedAt).toLocaleDateString("ko-KR")}</span>}
+          {registeredAt && <span>최초 등록 {formatDate(registeredAt)}</span>}
+          {lastUpdated && <span>마지막 업데이트 {formatDate(lastUpdated)}</span>}
         </div>
       )}
 

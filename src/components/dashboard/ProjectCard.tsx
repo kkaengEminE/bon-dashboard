@@ -4,6 +4,8 @@ import ProjectPreview from "./ProjectPreview";
 import StatusBadge from "@/components/ui/StatusBadge";
 import { REPO_METADATA } from "@/lib/repoMetadata";
 
+import { projectUpdatedAt } from "@/lib/projectDates";
+
 interface Project {
   id: string;
   name: string;
@@ -16,6 +18,7 @@ interface Project {
   likeCount: number;
   createdBy: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export default function ProjectCard({
@@ -26,6 +29,7 @@ export default function ProjectCard({
   onSelect: (id: string) => void;
 }) {
   const metadata = REPO_METADATA[project.repositoryName || project.name];
+  const lastUpdated = projectUpdatedAt(project);
   const displayTitle = metadata?.title || project.title || project.name;
   const displayDescription = metadata?.description || project.description;
 
@@ -64,13 +68,13 @@ export default function ProjectCard({
         </div>
 
         <div className="text-xs text-gray-500 mb-3">
-          마지막 업데이트 · {metadata?.updatedAt ? (
-            <time dateTime={metadata.updatedAt} title="Git 기준 · 한국 시간">
-              {new Date(metadata.updatedAt).toLocaleDateString("ko-KR", {
-                timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit",
+          마지막 업데이트 · {lastUpdated ? (
+            <time dateTime={lastUpdated} title="등록·수정 시간 · 한국 시간">
+              {new Date(lastUpdated).toLocaleString("ko-KR", {
+                timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false,
               })}
             </time>
-          ) : "Git 날짜 정보 없음"}
+          ) : "등록 시간 확인 필요"}
         </div>
 
         <div className="flex items-center justify-between text-xs text-gray-400 pt-3 border-t border-gray-100">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { projectUpdatedAt } from "@/lib/projectDates";
 import ProjectCard from "./ProjectCard";
 import { getProjects, type Project } from "@/lib/storage";
 import { REPO_METADATA } from "@/lib/repoMetadata";
@@ -52,8 +53,8 @@ export default function ProjectGrid({
       const aMetadata = REPO_METADATA[a.repositoryName || a.name];
       const bMetadata = REPO_METADATA[b.repositoryName || b.name];
       if (sort === "updated") {
-        const aTime = Date.parse(aMetadata?.updatedAt || "") || 0;
-        const bTime = Date.parse(bMetadata?.updatedAt || "") || 0;
+        const aTime = Date.parse(projectUpdatedAt(a) || "") || 0;
+        const bTime = Date.parse(projectUpdatedAt(b) || "") || 0;
         if (aTime !== bTime) return bTime - aTime;
       }
       return (aMetadata?.title || a.title || a.name).localeCompare(bMetadata?.title || b.title || b.name, "ko");

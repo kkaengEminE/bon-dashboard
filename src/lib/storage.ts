@@ -47,7 +47,7 @@ function toProject(row: any): Project {
     likeCount: row.like_count,
     createdBy: row.created_by,
     createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    updatedAt: row.updated_at || row.created_at,
   };
 }
 
@@ -60,7 +60,7 @@ function toComment(row: any): Comment {
     userName: row.user_name,
     content: row.content,
     createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    updatedAt: row.updated_at || row.created_at,
   };
 }
 
@@ -101,6 +101,7 @@ export async function addProject(data: {
   testUrl?: string | null;
   createdBy?: string;
 }): Promise<Project> {
+  const registeredAt = new Date().toISOString();
   const { data: row, error } = await getSupabase()
     .from("projects")
     .insert({
@@ -114,6 +115,8 @@ export async function addProject(data: {
       status: data.status || "developing",
       test_url: data.testUrl || null,
       created_by: data.createdBy || "",
+      created_at: registeredAt,
+      updated_at: registeredAt,
     })
     .select()
     .single();

@@ -1,0 +1,15 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const ts = require('typescript');
+const vm = require('node:vm');
+const source = fs.readFileSync('src/lib/projectDates.ts', 'utf8');
+const compiled = ts.transpileModule(source, {compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;
+const scope = { exports: {} }; vm.runInNewContext(compiled, scope);
+const date = scope.exports.projectUpdatedAt;
+const created = '2026-10-14T01:22:00Z', updated = '2026-10-15T03:00:00Z';
+assert.equal(date({createdAt:created,updatedAt:created}),created);
+assert.equal(date({createdAt:created,updatedAt:updated}),updated);
+assert.equal(date({createdAt:created}),created);
+assert.equal(date({createdAt:created,updatedAt:'invalid'}),created);
+assert.equal(date({}),null);
+console.log('PASS: first registration, subsequent update, legacy fallback, malformed dates.');

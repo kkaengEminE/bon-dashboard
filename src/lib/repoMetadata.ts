@@ -1,9 +1,9 @@
 export const REPO_METADATA: Record<string, { title: string; description: string; createdAt?: string | null; updatedAt?: string | null }> = {
   "umbrella-knights": {
     "title": "세 우산 기사단 · 비의 끝에서",
-    "description": "파란우산·검정우산·찢어진 우산이 얼음·그림자·가시로 싸우는 카툰 스타일 2D 횡스크롤 액션 RPG. 세 스테이지와 보스, 마을 공방을 탐험하세요.",
+    "description": "설·무영·홍아가 얼음·그림자·가시로 싸우는 픽셀 2D 횡스크롤 액션 RPG. 캐릭터별 전투 동작과 스킬, 세 스테이지·보스·마을 공방을 탐험하세요.",
     "createdAt": "2026-10-14T01:20:17Z",
-    "updatedAt": "2026-10-14T01:20:26Z"
+    "updatedAt": "2026-10-19T07:58:15Z"
 },
   "bon-dashboard": {
     "title": "Getting Started",

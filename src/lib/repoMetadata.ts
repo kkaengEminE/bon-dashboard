@@ -3,7 +3,7 @@ export const REPO_METADATA: Record<string, { title: string; description: string;
     "title": "세 우산 기사단 · 비의 끝에서",
     "description": "설·무영·홍아가 얼음·그림자·가시로 싸우는 픽셀 2D 횡스크롤 액션 RPG. 캐릭터별 전투 동작과 스킬, 세 스테이지·보스·마을 공방을 탐험하세요.",
     "createdAt": "2026-10-14T01:20:17Z",
-    "updatedAt": "2026-10-19T07:58:15Z"
+    "updatedAt": "2026-10-20T01:27:28Z"
 },
   "bon-dashboard": {
     "title": "Getting Started",
